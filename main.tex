@@ -1,118 +1,201 @@
 % ============================================================
-% SmartFood — Rapport complet final
-% Version V3 : Simplexe selon le cours, graphes dédiés
+% SmartFood — Rapport d'optimisation opérationnelle
+% Version finale — Groupe 12, 4GI, ENSP Yaoundé 2025-2026
 % ============================================================
 \documentclass[12pt,a4paper]{article}
 
+% ── Encodage & langue ──────────────────────────────────────────────────────
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[french,provide=*]{babel}
-\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
-\setlength{\headheight}{15pt}
 \usepackage{lmodern}
 \usepackage{textcomp}
 
-% ── Mise en page ───────────────────────────────────────────────────────────
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small\textit{SmartFood — Rapport de projet}}
-\fancyhead[R]{\small\textit{2024–2025}}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
+% ── Géométrie ──────────────────────────────────────────────────────────────
+\usepackage[top=2.5cm,bottom=2.8cm,left=2.8cm,right=2.8cm,
+            headheight=15pt]{geometry}
+
+% ── Typographie ────────────────────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.15}
 
 % ── Maths ──────────────────────────────────────────────────────────────────
 \usepackage{amsmath,amssymb,mathtools}
 
-% ── Tableaux ───────────────────────────────────────────────────────────────
-\usepackage{booktabs,array,multirow,longtable}
+% ── Couleurs (palette cohérente) ───────────────────────────────────────────
 \usepackage[table,dvipsnames]{xcolor}
 
-% ── Graphiques ─────────────────────────────────────────────────────────────
+% -- Palette principale : Navy / Slate / Accent
+\definecolor{NavyDark}   {RGB}{25,  42,  86}   % bleu marine foncé  → titres, header
+\definecolor{NavyMid}    {RGB}{41,  82, 163}   % bleu marine moyen  → sections, liens
+\definecolor{SlateLight} {RGB}{236, 240, 245}  % gris ardoise clair → fond tableaux
+\definecolor{SlateMid}   {RGB}{180, 193, 209}  % gris ardoise moyen → filets
+\definecolor{AccentTeal} {RGB}{ 22, 160, 133}  % sarcelle           → ACPM / résultats
+\definecolor{AccentAmber}{RGB}{230, 126,  34}  % ambre              → avertissements
+\definecolor{AccentRed}  {RGB}{192,  57,  43}  % rouge brique       → critique / erreurs
+
+% -- Couleurs fonctionnelles (garder la compatibilité avec le reste du code)
+\definecolor{critcolor}  {RGB}{192,  57,  43}  % = AccentRed
+\definecolor{starcolor}  {RGB}{ 41,  82, 163}  % = NavyMid
+\definecolor{acpmcolor}  {RGB}{ 22, 160, 133}  % = AccentTeal
+\definecolor{headerbg}   {RGB}{ 25,  42,  86}  % = NavyDark
+\definecolor{finalized}  {RGB}{220, 226, 235}  % gris ardoise pour cellules marquées
+\definecolor{pivotcol}   {RGB}{255, 243, 205}  % jaune pâle → colonne pivot
+\definecolor{pivotrow}   {RGB}{209, 242, 235}  % vert eau pâle → ligne pivot
+\definecolor{pivotelt}   {RGB}{255, 214, 102}  % or → élément pivot
+\definecolor{codebg}     {RGB}{245, 247, 250}  % fond code
+\definecolor{pyblue}     {RGB}{ 41,  82, 163}
+\definecolor{pygreen}    {RGB}{ 22, 160, 133}
+\definecolor{pygray}     {RGB}{130, 130, 130}
+
+% -- Couleurs chemins graphe
+\definecolor{pathA}{RGB}{ 22, 160, 133}   % teal   → client A
+\definecolor{pathB}{RGB}{ 41,  82, 163}   % navy   → client B
+\definecolor{pathC}{RGB}{230, 126,  34}   % ambre  → client C
+\definecolor{pathD}{RGB}{142,  68, 173}   % violet → client D
+
+% ── Tableaux ───────────────────────────────────────────────────────────────
+\usepackage{booktabs,array,multirow,longtable,colortbl}
+\arrayrulecolor{SlateMid}
+
+% ── Graphiques / TikZ ──────────────────────────────────────────────────────
 \usepackage{graphicx,caption,adjustbox}
 \usepackage{pdflscape}
 \usepackage{pgfgantt}
-
-% ── TikZ ───────────────────────────────────────────────────────────────────
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,decorations.pathreplacing,backgrounds}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+                decorations.pathreplacing,backgrounds}
 
-% ── Boîtes ─────────────────────────────────────────────────────────────────
+% ── Boîtes tcolorbox ───────────────────────────────────────────────────────
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{skins,breakable}
 
+% Style commun aux boîtes
+\tcbset{
+  smartbox/.style={
+    enhanced, breakable,
+    boxrule=0.6pt, arc=5pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fontupper=\small\setstretch{1.1}
+  }
+}
+
+\newtcolorbox{resultbox}{smartbox,
+  colback=AccentTeal!7, colframe=AccentTeal!60,
+  title={\textbf{Résultat}}, fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm,xshift=6mm},
+  boxed title style={colback=AccentTeal!80,colframe=AccentTeal,arc=3pt,
+    boxrule=0pt,top=2pt,bottom=2pt,left=5pt,right=5pt}
+}
+\newtcolorbox{alertbox}{smartbox,
+  colback=AccentAmber!8, colframe=AccentAmber!60,
+  borderline west={3pt}{0pt}{AccentAmber}
+}
+\newtcolorbox{warnbox}{smartbox,
+  colback=AccentRed!6, colframe=AccentRed!50,
+  borderline west={3pt}{0pt}{AccentRed}
+}
+\newtcolorbox{infobox}{smartbox,
+  colback=NavyMid!5, colframe=NavyMid!40,
+  borderline west={3pt}{0pt}{NavyMid}
+}
+
+% ── Titres de sections ─────────────────────────────────────────────────────
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\color{NavyDark}\Large\bfseries}
+  {\color{NavyDark}\thesection}{0.8em}{}
+  [{\color{NavyMid}\titlerule[1.2pt]}]
+
+\titleformat{\subsection}
+  {\color{NavyMid}\large\bfseries}
+  {\color{NavyMid}\thesubsection}{0.7em}{}
+  [{\color{SlateMid}\titlerule[0.5pt]}]
+
+\titleformat{\subsubsection}
+  {\color{NavyDark}\normalsize\bfseries}
+  {\color{NavyMid}\thesubsubsection}{0.6em}{}
+
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{14pt}{5pt}
+\titlespacing{\subsubsection}{0pt}{10pt}{4pt}
+
+% ── En-tête / pied de page ─────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{%
+  \color{NavyMid}\small\textit{SmartFood — Optimisation opérationnelle}}
+\fancyhead[R]{%
+  \color{NavyMid}\small\textit{Groupe 12 · 4GI · ENSP Yaoundé}}
+\fancyfoot[C]{%
+  \color{SlateMid}\small\rule{4cm}{0.3pt}\quad
+  \color{NavyDark}\thepage\quad
+  \color{SlateMid}\rule{4cm}{0.3pt}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\color{NavyMid}\hrule width\headwidth height\headrulewidth}
+\renewcommand{\footrulewidth}{0pt}
+
+% ── Légendes ───────────────────────────────────────────────────────────────
+\captionsetup{
+  font={small,color=NavyDark},
+  labelfont={bf,color=NavyMid},
+  labelsep=period,
+  skip=4pt
+}
+
 % ── Listes ─────────────────────────────────────────────────────────────────
 \usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em, itemsep=2pt, topsep=3pt}
+\setlist[enumerate]{leftmargin=1.4em, itemsep=2pt, topsep=3pt}
 
-% ── Code ───────────────────────────────────────────────────────────────────
+% ── Code Python ────────────────────────────────────────────────────────────
 \usepackage{listings}
-
-% ── Typo ───────────────────────────────────────────────────────────────────
-\usepackage{microtype,setspace}
-\onehalfspacing
-
-% ── Liens ──────────────────────────────────────────────────────────────────
-\usepackage[hidelinks,colorlinks=true,linkcolor=BrickRed,urlcolor=NavyBlue]{hyperref}
-
-% ── Couleurs ───────────────────────────────────────────────────────────────
-\definecolor{critcolor}{RGB}{231,76,60}
-\definecolor{starcolor}{RGB}{52,152,219}
-\definecolor{acpmcolor}{RGB}{39,174,96}
-\definecolor{headerbg}{RGB}{44,62,80}
-\definecolor{pivotcol}{RGB}{255,243,205}
-\definecolor{pivotrow}{RGB}{209,250,229}
-\definecolor{pivotelt}{RGB}{255,206,84}
-\definecolor{codebg}{RGB}{248,249,250}
-\definecolor{pyblue}{RGB}{0,0,200}
-\definecolor{pygreen}{RGB}{0,150,0}
-\definecolor{pygray}{RGB}{120,120,120}
-\definecolor{finalized}{RGB}{225,225,225}
-\definecolor{pathA}{RGB}{39,174,96}      % vert pour client A
-\definecolor{pathB}{RGB}{52,152,219}     % bleu pour client B
-\definecolor{pathC}{RGB}{230,126,34}     % orange pour client C
-\definecolor{pathD}{RGB}{142,68,173}     % violet pour client D
-
-% ── Environnements boîtes ──────────────────────────────────────────────────
-\newtcolorbox{resultbox}{enhanced,breakable,colback=green!8,colframe=acpmcolor!70,
-  boxrule=0.8pt,arc=4pt,left=6pt,right=6pt,top=5pt,bottom=5pt,fontupper=\small}
-\newtcolorbox{alertbox}{enhanced,breakable,colback=orange!10,colframe=orange!70,
-  boxrule=0.8pt,arc=4pt,left=6pt,right=6pt,top=5pt,bottom=5pt,fontupper=\small}
-\newtcolorbox{warnbox}{enhanced,breakable,colback=red!8,colframe=critcolor!80,
-  boxrule=0.8pt,arc=4pt,left=6pt,right=6pt,top=5pt,bottom=5pt,fontupper=\small}
-\newtcolorbox{etape}{enhanced,breakable,colback=blue!4,colframe=starcolor!70,
-  boxrule=0.8pt,arc=4pt,left=6pt,right=6pt,top=5pt,bottom=5pt,fontupper=\small,
-  title={Étape},coltitle=white}
-
-% ── Style listings ─────────────────────────────────────────────────────────
 \lstset{
   language=Python,
-  basicstyle=\tiny\ttfamily,
-  keywordstyle=\color{pyblue}\bfseries,
-  commentstyle=\color{pygreen}\itshape,
-  stringstyle=\color{orange!80!black},
+  basicstyle=\small\ttfamily\color{NavyDark},
+  keywordstyle=\color{NavyMid}\bfseries,
+  commentstyle=\color{AccentTeal}\itshape,
+  stringstyle=\color{AccentAmber!80!black},
   numberstyle=\tiny\color{pygray},
-  numbers=left, numbersep=6pt,
+  numbers=left, numbersep=8pt,
   backgroundcolor=\color{codebg},
-  frame=single, framesep=4pt, rulecolor=\color{gray!40},
+  frame=leftline, framesep=4pt,
+  rulecolor=\color{NavyMid!50},
   breaklines=true, breakatwhitespace=true,
   showstringspaces=false,
-  columns=fullflexible,
-  keepspaces=true,
+  columns=fullflexible, keepspaces=true,
+  xleftmargin=1.8em,
   literate=
     {é}{{\'{e}}}1 {è}{{\`{e}}}1 {ê}{{\^{e}}}1 {ë}{{\"e}}1
     {à}{{\`{a}}}1 {â}{{\^{a}}}1 {ä}{{\"a}}1
     {ô}{{\^{o}}}1 {ö}{{\"o}}1
     {î}{{\^{i}}}1 {ï}{{\"i}}1
     {ù}{{\`{u}}}1 {û}{{\^{u}}}1 {ü}{{\"u}}1
-    {ç}{{\c{c}}}1 {É}{{\'{E}}}1 {È}{{\`{E}}}1 {À}{{\`{A}}}1,
-  xleftmargin=1.5em
+    {ç}{{\c{c}}}1 {É}{{\'{E}}}1 {È}{{\`{E}}}1 {À}{{\`{A}}}1
 }
 
-% ── Commandes utiles ──────────────────────────────────────────────────────
+% ── Hyperliens ─────────────────────────────────────────────────────────────
+\usepackage[colorlinks=true, linkcolor=NavyMid, urlcolor=AccentTeal,
+            citecolor=AccentTeal, bookmarks=true,
+            pdftitle={SmartFood -- Rapport RO},
+            pdfauthor={Groupe 12 4GI ENSP Yaounde}]{hyperref}
+
+% ── Commandes utiles ───────────────────────────────────────────────────────
 \newcommand{\Pred}{\mathrm{Pred}}
 \newcommand{\Succ}{\mathrm{Succ}}
-\newcommand{\fin}[1]{\cellcolor{finalized}#1}
-\newcommand{\sel}[1]{\fbox{\textbf{#1}}}
+\newcommand{\fin}[1]{\cellcolor{finalized}{\color{NavyDark}#1}}
+\newcommand{\sel}[1]{\fbox{\textbf{\color{NavyDark}#1}}}
+
+% Commande pour numéros de section colorés en marge des boîtes
+\newcommand{\sectiontag}[2]{%
+  \noindent\colorbox{#1}{\color{white}\small\bfseries\strut\;#2\;}}
+
+% Filets décoratifs
+\newcommand{\sectionrule}{%
+  \noindent{\color{NavyMid}\rule{\linewidth}{0.5pt}}\vspace{2pt}}
 
 % =========================================================================
 \begin{document}
@@ -121,49 +204,103 @@
 % ── Page de garde ──────────────────────────────────────────────────────────
 \begin{titlepage}
 \thispagestyle{empty}
+
+%% Bande de couleur en haut
 \begin{tikzpicture}[remember picture,overlay]
-  \fill[headerbg] (current page.north west) rectangle ([yshift=-4.5cm]current page.north east);
-  \fill[critcolor] ([yshift=-4.5cm]current page.north west) rectangle ([yshift=-4.9cm]current page.north east);
+  % Bande principale navy
+  \fill[NavyDark]
+    (current page.north west) rectangle
+    ([yshift=-5.2cm]current page.north east);
+  % Bande accent fine
+  \fill[AccentTeal]
+    ([yshift=-5.2cm]current page.north west) rectangle
+    ([yshift=-5.7cm]current page.north east);
+  % Motif géométrique discret (grille)
+  \foreach \x in {0,1,...,22} {
+    \draw[NavyMid!30, line width=0.3pt]
+      ([xshift=\x cm]current page.north west) --
+      ([xshift=\x cm, yshift=-5.2cm]current page.north east);
+  }
+  % Bande fine en bas de page
+  \fill[SlateLight]
+    (current page.south west) rectangle
+    ([yshift=1.5cm]current page.south east);
+  \fill[AccentTeal]
+    ([yshift=1.5cm]current page.south west) rectangle
+    ([yshift=1.7cm]current page.south east);
 \end{tikzpicture}
-\vspace*{1.8cm}
+
+%% Contenu haut (sur la bande navy)
+\vspace*{1.2cm}
 \begin{center}
-  {\color{white}\fontsize{30}{36}\selectfont\bfseries SmartFood}\\[0.3cm]
-  {\Large École Nationale Supérieure Polytechnique de Yaoundé - Département du Génie Informatique - 4GI}
+  {\color{white}\fontsize{13}{16}\selectfont\bfseries
+   École Nationale Supérieure Polytechnique de Yaoundé}\\[0.25cm]
+  {\color{AccentTeal!80!white}\fontsize{11}{14}\selectfont
+   Département du Génie Informatique · Filière 4GI}\\[0.25cm]
+  {\color{SlateMid}\rule{10cm}{0.4pt}}\\[0.4cm]
+  {\color{white}\fontsize{32}{38}\selectfont\bfseries SmartFood}\\[0.15cm]
+  {\color{AccentTeal!90!white}\fontsize{14}{18}\selectfont\itshape
+   Optimisation de la livraison et production de repas}
 \end{center}
-\vspace{2cm}
+
+\vspace{2.0cm}
+
+%% Boîte centrale
 \begin{center}
-\begin{tcolorbox}[enhanced,width=0.78\textwidth,colback=white,colframe=headerbg,
-  boxrule=1.2pt,arc=6pt,top=12pt,bottom=12pt]
+\begin{tcolorbox}[enhanced, width=0.82\textwidth,
+  colback=white, colframe=NavyDark, boxrule=1.2pt, arc=6pt,
+  top=14pt, bottom=14pt, left=18pt, right=18pt,
+  shadow={2pt}{-2pt}{0pt}{black!15}]
   \centering
-  {\Large\bfseries Rapport de projet}\\[0.4em]
-  {\huge\bfseries SmartFood}\\[0.4em]
-  {\large Optimisation combinatoire, graphes et programmation linéaire}
+  {\color{NavyDark}\normalsize\bfseries Rapport de Recherche Opérationnelle}\\[0.5em]
+  {\color{SlateMid}\rule{6cm}{0.4pt}}\\[0.6em]
+  \begin{tabular}{@{}c@{\quad}c@{}}
+    \sectiontag{NavyMid}{PCC}  & Algorithme de Dijkstra\\[0.3em]
+    \sectiontag{AccentTeal}{ACPM} & Algorithme de Kruskal\\[0.3em]
+    \sectiontag{AccentAmber}{PERT} & Ordonnancement / Gantt\\[0.3em]
+    \sectiontag{AccentRed}{PL}  & Méthode du Simplexe
+  \end{tabular}
 \end{tcolorbox}
 \end{center}
-\vspace{1.2cm}
+
+\vspace{1.5cm}
+
+%% Tableau équipe
 \begin{center}
-\begin{tabular}{ll}
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.25}
+{\small
+\begin{tabular}{@{}lc@{}}
+\arrayrulecolor{SlateMid}
 \toprule
-\multicolumn{2}{c}{\textbf{Équipe — Groupe 12}}\\
+\rowcolor{SlateLight}
+\multicolumn{2}{c}{\color{NavyDark}\bfseries Équipe — Groupe 12}\\
 \midrule
-BELEKOTAN II JEFF NICHOSS         & 24P765 \\
-TAGNE SOUOP THOMAS DISNEY         & 22P238 \\
-MAGNE ISABELLE CHRIST             & 22P380 \\
-FOFACK HENRI                      & 22P231 \\
-TOMO MBIANDA ANGELA KATIA         & 22P563 \\
-ELOUNDOU NGOUMA THOMAS            & 22P294 \\
-AYISSI NGONO ODILE Marie Ange     & 24P764 \\
-WATON JEUTA IVANA                 & 24P763 \\
-NZIELEU NGNOULAYE NATHAN MAGDIEL  & 22P587 \\
-WOKMENI RAISSA                    & 22P246 \\
-ZUCHUON KOUGANG NATHANAEL MICHEL  & 22P218 \\
-BISSECK CHALVI NATHANAEL          & 22P600 \\
+BELEKOTAN II JEFF NICHOSS         & \texttt{24P765}\\
+TAGNE SOUOP THOMAS DISNEY         & \texttt{22P238}\\
+MAGNE ISABELLE CHRIST             & \texttt{22P380}\\
+FOFACK HENRI                      & \texttt{22P231}\\
+TOMO MBIANDA ANGELA KATIA         & \texttt{22P563}\\
+ELOUNDOU NGOUMA THOMAS            & \texttt{22P294}\\
+AYISSI NGONO ODILE Marie Ange     & \texttt{24P764}\\
+WATON JEUTA IVANA                 & \texttt{24P763}\\
+NZIELEU NGNOULAYE NATHAN MAGDIEL  & \texttt{22P587}\\
+WOKMENI RAISSA                    & \texttt{22P246}\\
+ZUCHUON KOUGANG NATHANAEL MICHEL  & \texttt{22P218}\\
+BISSECK CHALVI NATHANAEL          & \texttt{22P600}\\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{center}
+
 \vfill
-\begin{center}{\large Supervisé par : Dr TIONING}\end{center}
-\begin{center}{\large Année universitaire 2025–2026}\end{center}
+\begin{center}
+  {\color{NavyDark}\small Supervisé par :
+   \textbf{Dr TIONING}} \quad
+  {\color{SlateMid}|} \quad
+  {\color{NavyDark}\small Année universitaire \textbf{2025–2026}}
+\end{center}
+\vspace{0.6cm}
+
 \end{titlepage}
 
 \pagenumbering{roman}
@@ -790,7 +927,7 @@ $M=\emptyset,\;\min\_dist\_M = 0$.
 \vspace*{0.3cm}
 
 \begin{center}
-\small\textbf{Application de l'algorithme de Dijkstra — source $x_0 = E$}
+{\color{NavyMid}\small\bfseries Application de l'algorithme de Dijkstra — source $x_0 = E$}
 \vspace{6pt}
 
 \setlength{\tabcolsep}{5pt}
@@ -798,13 +935,34 @@ $M=\emptyset,\;\min\_dist\_M = 0$.
 \small
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{c||c|c|c|c|c|c|c|c|c|c||c|c|c|c|c|c|c|c|c|c}
+\arrayrulecolor{NavyDark}
 \hline
-\multirow{2}{*}{$M$} &
-\multicolumn{10}{c||}{\textbf{Distances estimées}} &
-\multicolumn{10}{c}{\textbf{Tableau des pères $P(s)$}} \\
-\cline{2-21}
-& $d(E)$ & $d(C_1)$ & $d(C_2)$ & $d(C_3)$ & $d(C_4)$ & $d(A)$ & $d(B)$ & $d(C)$ & $d(D)$ & $d(\mathrm{Labo})$
-& $P(E)$ & $P(C_1)$ & $P(C_2)$ & $P(C_3)$ & $P(C_4)$ & $P(A)$ & $P(B)$ & $P(C)$ & $P(D)$ & $P(\mathrm{Labo})$ \\
+\multicolumn{1}{>{\columncolor{NavyDark}}c||}{{\color{white}\bfseries$M$}} &
+\multicolumn{10}{>{\columncolor{NavyDark}}c||}{\color{white}\bfseries Distances estimées $d(s)$} &
+\multicolumn{10}{>{\columncolor{NavyDark}}c}{\color{white}\bfseries Tableau des pères $P(s)$} \\
+\hline
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c||}{} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(E)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(C_1)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(C_2)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(C_3)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(C_4)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(A)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(B)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(C)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$d(D)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c||}{{\color{white}$d(\mathrm{Labo})$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(E)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(C_1)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(C_2)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(C_3)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(C_4)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(A)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(B)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(C)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c|}{{\color{white}$P(D)$}} &
+\multicolumn{1}{>{\columncolor{NavyMid!80}}c}{{\color{white}$P(\mathrm{Labo})$}} \\
+\arrayrulecolor{SlateMid}
 \hline
 $\emptyset$ &
 \textbf{0} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ &
@@ -938,15 +1096,24 @@ clients $A$, $B$, $C$ et $D$. Le client $F$ apparaît en pointillé gris (inacce
 \subsubsection{Synthèse des trajets}
 
 \begin{center}\small
-\begin{tabular}{c|c|c|c}
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{clcc}
+\arrayrulecolor{SlateMid}
 \toprule
-\textbf{Client} & \textbf{Chemin} & \textbf{Distance (km)} & \textbf{Accessible}\\
+\rowcolor{NavyDark}
+{\color{white}\textbf{Client}} &
+{\color{white}\textbf{Chemin optimal}} &
+{\color{white}\textbf{Distance (km)}} &
+{\color{white}\textbf{Accessible}}\\
 \midrule
-$A$ & $E\to C_1\to A\to$ Labo & \textbf{10} & Oui\\
-$B$ & $E\to C_1\to B\to$ Labo & \textbf{12} & Oui\\
-$C$ & $E\to C_2\to C\to$ Labo & \textbf{13} & Oui\\
-$D$ & $E\to C_2\to D\to$ Labo & \textbf{13} & Oui\\
-$F$ & — & $+\infty$ & \textcolor{critcolor}{Non}\\
+$A$ & $E\to C_1\to A\to$ Labo & \textbf{10} & \textcolor{AccentTeal}{\textbf{Oui}}\\
+\rowcolor{SlateLight}
+$B$ & $E\to C_1\to B\to$ Labo & \textbf{12} & \textcolor{AccentTeal}{\textbf{Oui}}\\
+$C$ & $E\to C_2\to C\to$ Labo & \textbf{13} & \textcolor{AccentTeal}{\textbf{Oui}}\\
+\rowcolor{SlateLight}
+$D$ & $E\to C_2\to D\to$ Labo & \textbf{13} & \textcolor{AccentTeal}{\textbf{Oui}}\\
+$F$ & — & $+\infty$ & \textcolor{AccentRed}{\textbf{Non}}\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -971,10 +1138,18 @@ arête à condition qu'elle ne forme pas de cycle (vérifié par Union-Find). L'
 s'arrête après $n-1 = 9$ arêtes sélectionnées.
 
 \begin{center}\small
-\rowcolors{2}{acpmcolor!8}{white}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.2}
+\rowcolors{2}{AccentTeal!8}{white}
 \begin{tabular}{clccl}
+\arrayrulecolor{SlateMid}
 \toprule
-\textbf{Ordre} & \textbf{Arête} & \textbf{Poids (km)} & \textbf{Cumulé} & \textbf{Décision}\\
+\rowcolor{NavyDark}
+{\color{white}\textbf{Ordre}} &
+{\color{white}\textbf{Arête}} &
+{\color{white}\textbf{Poids (km)}} &
+{\color{white}\textbf{Cumulé}} &
+{\color{white}\textbf{Décision}}\\
 \midrule
 1 & $A - B$       & 2 & 2  & Acceptée (1\textsuperscript{re} composante)\\
 2 & $C_2 - C$     & 2 & 4  & Acceptée (nouvelle composante)\\
@@ -1055,19 +1230,29 @@ $C_2$--$C$=2 km, $C$--$D$=3 km, $C_1$--$A$=3 km) plutôt que de rayonner depuis 
 \subsubsection{Tableau PERT — dates et marges}
 
 \begin{center}\small
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{clccccccc}
+\arrayrulecolor{SlateMid}
 \toprule
-\textbf{Tâche} & \textbf{Description} & $d_i$ & $ES$ & $EF$ & $LS$ & $LF$ & $MT$ & \textbf{Critique}\\
+\rowcolor{NavyDark}
+{\color{white}\textbf{Tâche}} &
+{\color{white}\textbf{Description}} &
+{\color{white}$d_i$} &
+{\color{white}$ES$} & {\color{white}$EF$} &
+{\color{white}$LS$} & {\color{white}$LF$} &
+{\color{white}$MT$} &
+{\color{white}\textbf{Critique}}\\
 \midrule
-$P_1$ & Pesée                & 20 & 0   & 20  & 0   & 20  & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
-$P_2$ & Cuisson              & 40 & 20  & 60  & 20  & 60  & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
-$P_3$ & Assaisonnement       & 15 & 60  & 75  & 60  & 75  & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
-$P_4$ & Conditionnement      & 30 & 75  & 105 & 75  & 105 & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
-$L_1$ & Chargement camion    & 10 & 105 & 115 & 105 & 115 & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
+$P_1$ & Pesée                & 20 & 0   & 20  & 0   & 20  & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
+$P_2$ & Cuisson              & 40 & 20  & 60  & 20  & 60  & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
+$P_3$ & Assaisonnement       & 15 & 60  & 75  & 60  & 75  & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
+$P_4$ & Conditionnement      & 30 & 75  & 105 & 75  & 105 & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
+$L_1$ & Chargement camion    & 10 & 105 & 115 & 105 & 115 & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
+\rowcolor{SlateLight}
 $L_2$ & Livraison client A   & 12 & 115 & 127 & 121 & 133 & 6 & Non\\
-$L_3$ & Livraison client B   & 18 & 115 & 133 & 115 & 133 & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
-$L_4$ & Retour laboratoire   & 25 & 133 & 158 & 133 & 158 & \cellcolor{critcolor!25}\textbf{0} & \cellcolor{critcolor!25}Oui\\
+$L_3$ & Livraison client B   & 18 & 115 & 133 & 115 & 133 & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
+$L_4$ & Retour laboratoire   & 25 & 133 & 158 & 133 & 158 & \cellcolor{AccentRed!20}\textbf{0} & \cellcolor{AccentRed!20}\textcolor{AccentRed}{\textbf{Oui}}\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1246,9 +1431,11 @@ Var. sortante : $x_{12}$ (ratio min $= 30/1 = 30$). Pivot $= 1$.}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
-$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
-\textbf{V.B.} \\
+\rowcolor{NavyDark}
+{\color{white}$b$} & {\color{white}$x_1'$} & {\color{white}$x_2'$} & {\color{white}$x_3'$} &
+{\color{white}$x_4$} & {\color{white}$x_5$} & {\color{white}$x_6$} & {\color{white}$x_7$} &
+{\color{white}$x_8$} & {\color{white}$x_9$} & {\color{white}$x_{10}$} & {\color{white}$x_{11}$} &
+{\color{white}$x_{12}$} & {\color{white}\textbf{V.B.}} \\
 \hline
 0   & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & \textcolor{critcolor}{$-5$}
     & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $Z$ \\
@@ -1282,9 +1469,11 @@ $x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
-$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
-\textbf{V.B.} \\
+\rowcolor{NavyDark}
+{\color{white}$b$} & {\color{white}$x_1'$} & {\color{white}$x_2'$} & {\color{white}$x_3'$} &
+{\color{white}$x_4$} & {\color{white}$x_5$} & {\color{white}$x_6$} & {\color{white}$x_7$} &
+{\color{white}$x_8$} & {\color{white}$x_9$} & {\color{white}$x_{10}$} & {\color{white}$x_{11}$} &
+{\color{white}$x_{12}$} & {\color{white}\textbf{V.B.}} \\
 \hline
 150 & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & 0
   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 5 & $Z$ \\
@@ -1322,9 +1511,11 @@ $x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
-$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
-\textbf{V.B.} \\
+\rowcolor{NavyDark}
+{\color{white}$b$} & {\color{white}$x_1'$} & {\color{white}$x_2'$} & {\color{white}$x_3'$} &
+{\color{white}$x_4$} & {\color{white}$x_5$} & {\color{white}$x_6$} & {\color{white}$x_7$} &
+{\color{white}$x_8$} & {\color{white}$x_9$} & {\color{white}$x_{10}$} & {\color{white}$x_{11}$} &
+{\color{white}$x_{12}$} & {\color{white}\textbf{V.B.}} \\
 \hline
 370 & \textcolor{critcolor}{$-1$} & 0 & 0
   & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3,8 & $Z$ \\
@@ -1358,9 +1549,11 @@ $x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
-$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
-\textbf{V.B.} \\
+\rowcolor{NavyDark}
+{\color{white}$b$} & {\color{white}$x_1'$} & {\color{white}$x_2'$} & {\color{white}$x_3'$} &
+{\color{white}$x_4$} & {\color{white}$x_5$} & {\color{white}$x_6$} & {\color{white}$x_7$} &
+{\color{white}$x_8$} & {\color{white}$x_9$} & {\color{white}$x_{10}$} & {\color{white}$x_{11}$} &
+{\color{white}$x_{12}$} & {\color{white}\textbf{V.B.}} \\
 \hline
 \textbf{450} & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 3,8 & $Z$ \\
 \hline
