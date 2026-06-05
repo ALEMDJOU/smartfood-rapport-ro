@@ -774,74 +774,75 @@ que vers $E$ (arc retour) et ne dessert directement aucun client.
 
 \subsubsection{Tableau des itérations de Dijkstra}
 
-On applique l'algorithme de Dijkstra (version améliorée du cours) depuis la source
-$x_0 = E$. La liste $L$ contient les sommets à explorer. À chaque itération on
-choisit $x \in L$ tel que $d(x)$ est minimal, on marque $x$ (\colorbox{finalized}{grisé}),
-puis on met à jour les distances estimées des successeurs $G(x)$ non encore marqués.
-La distance \sel{encadrée} indique le sommet sélectionné à cette itération.
+On applique l'algorithme de Dijkstra depuis la source $x_0 = E$.
+La colonne $M$ indique l'ensemble des sommets marqués à chaque étape.
+Les distances estimées $d(s)$ sont mises à jour à chaque relaxation (valeur en gras = mise à jour).
+Le tableau des pères $P(s)$ est rempli au moment où le sommet est marqué.
 
 \medskip
 \noindent\textbf{Initialisation :}
-$d(E)=0,\; P(E)=\text{nul}$;\quad
-$d(s)=+\infty,\; P(s)=\text{nul}$ pour tout $s \neq E$;\quad
-$L = \{E\}$.
+$d(E)=0,\;P(E)=\text{nul}$;\quad
+$d(s)=+\infty,\;P(s)=\text{nul}\;\forall s\neq E$;\quad
+$M=\emptyset,\;\min\_dist\_M = 0$.
 
 \begin{landscape}
 \thispagestyle{fancy}
 \vspace*{0.3cm}
 
-% ── Tableau principal des distances estimées ───────────────────────────
 \begin{center}
-\small\textbf{Tableau d'itérations — distances estimées $d(s)$ et pères $P(s)$}
-\vspace{4pt}
+\small\textbf{Application de l'algorithme de Dijkstra — source $x_0 = E$}
+\vspace{6pt}
 
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.3}
-\scriptsize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.5}
+\small
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{c||c|c|c|c|c|c|c|c|c|c||c|c|c|c|c|c|c|c|c|c}
 \hline
-\textbf{Sél.} $x$ &
-\textbf{$d(E)$} &
-\textbf{$d(C_1)$} &
-\textbf{$d(C_2)$} &
-\textbf{$d(C_3)$} &
-\textbf{$d(C_4)$} &
-\textbf{$d(A)$} &
-\textbf{$d(B)$} &
-\textbf{$d(C)$} &
-\textbf{$d(D)$} &
-\textbf{$d(F)$} &
-\textbf{$d(\mathrm{Labo})$} \\
+\multirow{2}{*}{$M$} &
+\multicolumn{10}{c||}{\textbf{Distances estimées}} &
+\multicolumn{10}{c}{\textbf{Tableau des pères $P(s)$}} \\
+\cline{2-21}
+& $d(E)$ & $d(C_1)$ & $d(C_2)$ & $d(C_3)$ & $d(C_4)$ & $d(A)$ & $d(B)$ & $d(C)$ & $d(D)$ & $d(\mathrm{Labo})$
+& $P(E)$ & $P(C_1)$ & $P(C_2)$ & $P(C_3)$ & $P(C_4)$ & $P(A)$ & $P(B)$ & $P(C)$ & $P(D)$ & $P(\mathrm{Labo})$ \\
 \hline
-Init. &
-\sel{0} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ \\
+$\emptyset$ &
+\textbf{0} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ &
+nul & nul & nul & nul & nul & nul & nul & nul & nul & nul \\
 \hline
-$E$ &
-\fin{0} & \textbf{5} & \textbf{7} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ \\
+$\{E\}$ &
+\fin{0} & \textbf{5} & \textbf{7} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ &
+nul & $E$ & $E$ & & & & & & & \\
 \hline
-$C_1$ &
-\fin{0} & \fin{5} & 7 & $+\infty$ & $+\infty$ & \textbf{8} & \textbf{9} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ \\
+$\{E,C_1\}$ &
+\fin{0} & \fin{5} & 7 & $+\infty$ & $+\infty$ & \textbf{8} & \textbf{9} & $+\infty$ & $+\infty$ & $+\infty$ &
+nul & $E$ & $E$ & & & $C_1$ & $C_1$ & & & \\
 \hline
-$C_2$ &
-\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & 8 & 9 & \textbf{9} & \textbf{12} & $+\infty$ & $+\infty$ \\
+$\{E,C_1,C_2\}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & 8 & 9 & \textbf{9} & \textbf{12} & $+\infty$ &
+nul & $E$ & $E$ & & & $C_1$ & $C_1$ & $C_2$ & $C_2$ & \\
 \hline
-$A$ &
-\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & 9 & 9 & 12 & $+\infty$ & \textbf{10} \\
+$\{E,C_1,C_2,A\}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & 9 & 9 & 12 & \textbf{10} &
+nul & $E$ & $E$ & & & $C_1$ & $C_1$ & $C_2$ & $C_2$ & $A$ \\
 \hline
-$B$ &
-\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & 9 & 12 & $+\infty$ & 10 \\
+$\{E,C_1,C_2,A,B\}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & 9 & 12 & 10 &
+nul & $E$ & $E$ & & & $C_1$ & $C_1$ & $C_2$ & $C_2$ & $A$ \\
 \hline
-$C$ &
-\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & 12 & $+\infty$ & 10 \\
+$\{E,C_1,C_2,A,B,C\}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & 12 & 10 &
+nul & $E$ & $E$ & & & $C_1$ & $C_1$ & $C_2$ & $C_2$ & $A$ \\
 \hline
-$\mathrm{Labo}$ &
-\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & 12 & $+\infty$ & \fin{10} \\
+$\{E,C_1,C_2,A,B,C,\mathrm{Labo}\}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & 12 & \fin{10} &
+nul & $E$ & $E$ & & & $C_1$ & $C_1$ & $C_2$ & $C_2$ & $A$ \\
 \hline
-$D$ &
-\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & \fin{12} & $+\infty$ & \fin{10} \\
+$\{E,C_1,C_2,A,B,C,\mathrm{Labo},D\}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & \fin{12} & \fin{10} &
+nul & $E$ & $E$ & — & — & $C_1$ & $C_1$ & $C_2$ & $C_2$ & $A$ \\
 \hline
-\multicolumn{12}{|l|}{\textit{$C_3$, $C_4$, $F$ : jamais atteints depuis $E$ — $d = +\infty$, $P = \text{nul}$}}\\
+\multicolumn{21}{l}{\textit{$C_3$, $C_4$, $F$ : jamais atteints — $d=+\infty$, $P=$ nul. $\min\_dist\_M = +\infty$ $\Rightarrow$ arrêt.}}\\
 \hline
 \end{tabular}
 }
@@ -849,62 +850,22 @@ $D$ &
 
 \vspace{0.5cm}
 
-% ── Tableau des pères (reconstitution des chemins) ─────────────────────
-\begin{center}
-\small\textbf{Tableau des pères $P(s)$ — solution finale}
-\vspace{4pt}
-
-\setlength{\tabcolsep}{6pt}
-\renewcommand{\arraystretch}{1.4}
-\small
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
-\hline
-$s$ & $E$ & $C_1$ & $C_2$ & $C_3$ & $C_4$ & $A$ & $B$ & $C$ & $D$ & $F$ & Labo\\
-\hline
-$P(s)$ & nul & $E$ & $E$ & — & — & $C_1$ & $C_1$ & $C_2$ & $C_2$ & — & $A$\\
-\hline
-$d(s)$ & 0 & 5 & 7 & $+\infty$ & $+\infty$ & 8 & 9 & 9 & 12 & $+\infty$ & \textbf{10}\\
-\hline
-\end{tabular}
-\end{center}
-
-\vspace{0.5cm}
-
-% ── Détail des relaxations ─────────────────────────────────────────────
-\noindent\small\textit{Détail des mises à jour (relaxations) :}
-\begin{itemize}[noitemsep]
-\item \textbf{Sél. $E$} : $G(E)=\{C_1, C_2\}$.
-  $d(C_1)\leftarrow 0+5=5,\;P(C_1)\leftarrow E$;\;
-  $d(C_2)\leftarrow 0+7=7,\;P(C_2)\leftarrow E$.\; $L\leftarrow\{C_1,C_2\}$.
-\item \textbf{Sél. $C_1$} (min de $L$) : $G(C_1)=\{A,B\}$.
-  $d(A)\leftarrow 5+3=8,\;P(A)\leftarrow C_1$;\;
-  $d(B)\leftarrow 5+4=9,\;P(B)\leftarrow C_1$.
-\item \textbf{Sél. $C_2$} : $G(C_2)=\{C,D\}$.
-  $d(C)\leftarrow 7+2=9,\;P(C)\leftarrow C_2$;\;
-  $d(D)\leftarrow 7+5=12,\;P(D)\leftarrow C_2$.
-\item \textbf{Sél. $A$} : $G(A)=\{\text{Labo}\}$.
-  $d(\text{Labo})\leftarrow 8+2=10,\;P(\text{Labo})\leftarrow A$.
-\item \textbf{Sél. $B$} : tentative $d(\text{Labo})=9+3=12>10$ — \textbf{pas de mise à jour}.
-\item \textbf{Sél. $C$} : tentative $d(\text{Labo})=9+4=13>10$ — \textbf{pas de mise à jour}.
-\item \textbf{Sél. Labo} : $G(\text{Labo})=\emptyset$ — aucune relaxation.
-\item \textbf{Sél. $D$} : tentative $d(\text{Labo})=12+1=13>10$ — \textbf{pas de mise à jour}.
-\end{itemize}
-
-\vspace{0.3cm}
-\noindent\textbf{Reconstruction des chemins} (remontée du tableau des pères depuis $s$) :
+\noindent\textbf{Reconstruction des chemins} (remontée du tableau des pères) :
 
 \begin{center}\small
 \begin{tabular}{c|l|c}
 \toprule
-\textbf{Client} & \textbf{Chemin reconstruit} & \textbf{Distance}\\
+\textbf{Client} & \textbf{Chemin (remontée : $s \xleftarrow{P} \cdots \xleftarrow{P} E$)} & \textbf{Distance}\\
 \midrule
-$A$ & Labo $\xleftarrow{P}$ $A$ $\xleftarrow{P}$ $C_1$ $\xleftarrow{P}$ $E$
-    $\;\Rightarrow\;$ $E\to C_1\to A\to\text{Labo}$ & \textbf{10 km}\\
-$B$ & Labo $\xleftarrow{P}$ $A\;(\text{non})$; recalcul depuis $B$ :
-    $E\to C_1\to B\to\text{Labo}$ & \textbf{12 km}\\
-$C$ & $E\to C_2\to C\to\text{Labo}$ & \textbf{13 km}\\
-$D$ & $E\to C_2\to D\to\text{Labo}$ & \textbf{13 km}\\
-$F$ & inaccessible ($d(F)=+\infty$) & —\\
+$A$ & $\mathrm{Labo}\xleftarrow{P(A)}C_1\xleftarrow{P(C_1)}E$
+    $\;\Rightarrow\; E\to C_1\to A\to\mathrm{Labo}$ & \textbf{10 km}\\
+$B$ & $\mathrm{Labo}\xrightarrow{\text{recalc}}B\xleftarrow{P(B)}C_1\xleftarrow{P(C_1)}E$
+    $\;\Rightarrow\; E\to C_1\to B\to\mathrm{Labo}$ & \textbf{12 km}\\
+$C$ & $\mathrm{Labo}\xrightarrow{\text{recalc}}C\xleftarrow{P(C)}C_2\xleftarrow{P(C_2)}E$
+    $\;\Rightarrow\; E\to C_2\to C\to\mathrm{Labo}$ & \textbf{13 km}\\
+$D$ & $\mathrm{Labo}\xrightarrow{\text{recalc}}D\xleftarrow{P(D)}C_2\xleftarrow{P(C_2)}E$
+    $\;\Rightarrow\; E\to C_2\to D\to\mathrm{Labo}$ & \textbf{13 km}\\
+$F$ & $d(F)=+\infty$ — inaccessible & —\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1227,103 +1188,47 @@ superposent pas.
 \subsection{Programmation linéaire — Méthode du Simplexe}
 % ─────────────────────────────────────────────────────────────────────────
 
-Conformément à la structure de rédaction académique, nous procédons par les étapes
-suivantes : (i) rappel du modèle et correspondance des notations, (ii) mise sous forme
-standard, (iii) construction du tableau initial, (iv) itérations successives avec
-calcul des pivots, (v) test d'optimalité, (vi) interprétation.
+Conformément aux notations du cours ($\max Z = cx$, $Ax \leq b$, $x \geq 0$),
+les tableaux du simplexe présentent : le membre de droite ($b_i$) à l'extrême
+gauche, les variables ($x_1, x_2, \ldots, x_{n+m}$) au centre, et la variable
+de base à l'extrême droite. La ligne $Z$ figure en tête du tableau.
 
-\subsubsection{Étape 1 — Modèle et correspondance des notations}
+\subsubsection{Étape 1 — Variables et fonction objectif}
 
-En référence au modèle général $\max Z = CX$, $AX \leq B$, $X \geq 0$
-(équation~\ref{eq:pl_smartfood}), les variables de décision sont :
-\[
-x_1 = S \;\text{(Standard)},\quad x_2 = V \;\text{(Végétarien)},\quad
-x_3 = G \;\text{(sans Gluten)}
-\]
-avec les coefficients $c_1=3$, $c_2=4$, $c_3=5$ (en \texteuro/repas).
+Les variables de décision sont $x_1 = S$ (Standard), $x_2 = V$ (Végétarien),
+$x_3 = G$ (sans Gluten), avec $c_1=3$, $c_2=4$, $c_3=5$ (\texteuro/repas).
 
-\noindent\textbf{Fonction objectif :}
-\[
-\text{Maximiser}\quad Z = \sum_{j=1}^{3} c_j x_j = 3x_1 + 4x_2 + 5x_3
-\]
+\noindent$\max\; Z = 3x_1 + 4x_2 + 5x_3$,\quad soit la ligne $Z$ : $Z - 3x_1 - 4x_2 - 5x_3 = 0$.
 
-\noindent\textbf{Contraintes $\sum_{j=1}^{3} a_{ij} x_j \leq b_i$ :}
-\[
-\begin{cases}
-a_{11}x_1 + a_{12}x_2 + a_{13}x_3 = 0{,}5x_1 + x_2 + 0{,}3x_3 &\leq 100 \quad (i=1,\;\text{légumes})\\
-a_{21}x_1 \phantom{{}+a_{22}x_2+a_{23}x_3} = 0{,}8x_1 &\leq 80 \quad (i=2,\;\text{viande})\\
-a_{31}x_1 + a_{32}x_2 + a_{33}x_3 = 0{,}4x_1 + 0{,}6x_2 + 0{,}9x_3 &\leq 120 \quad (i=3,\;\text{céréales})\\
-a_{41}x_1 + a_{42}x_2 + a_{43}x_3 = 2x_1 + 1{,}5x_2 + 3x_3 &\leq 480 \quad (i=4,\;\text{cuisson})\\
-a_{51}x_1 + a_{52}x_2 + a_{53}x_3 = 1{,}5x_1 + 1{,}2x_2 + 2x_3 &\leq 600 \quad (i=5,\;\text{MO})\\
-a_{61}x_1 + a_{62}x_2 + a_{63}x_3 = x_1 + x_2 + x_3 &\leq 200 \quad (i=6,\;\text{total})\\
-20\leq x_1\leq 100,\quad 20\leq x_2\leq 80,\quad 20\leq x_3\leq 50,\quad x_j\in\mathbb{N}
-\end{cases}
-\]
+\subsubsection{Étape 2 — Changement de variables (bornes inférieures)}
 
-\subsubsection{Étape 2 — Élimination des bornes inférieures}
+Posons $x_1' = x_1-20$, $x_2' = x_2-20$, $x_3' = x_3-20$ ($x_j' \geq 0$).
+La fonction objectif devient $Z' = 3x_1' + 4x_2' + 5x_3'$, avec $Z = Z'+240$.
 
-Les contraintes $x_1 \geq 20$, $x_2 \geq 20$, $x_3 \geq 20$ \textbf{ne sont pas de la
-forme $\leq$} et nécessiteraient des variables artificielles (méthode du Grand M ou
-méthode des deux phases). On préfère le \textbf{changement de variables} suivant :
-\[
-x_1' = x_1 - 20,\quad x_2' = x_2 - 20,\quad x_3' = x_3 - 20
-\quad (\text{avec } x_1', x_2', x_3' \geq 0)
-\]
-\textit{Note de correspondance avec la notation précédente : $S'=x_1'$, $V'=x_2'$, $G'=x_3'$.
-Les tableaux du simplexe conservent les notations $S'$, $V'$, $G'$ pour la lisibilité.}
+\subsubsection{Étape 3 — Forme standard}
 
-La fonction objectif devient :
-\[
-Z = \sum_{j=1}^{3} c_j(x_j'+20) = \sum_{j=1}^{3} c_j x_j'
-    + \underbrace{20(c_1+c_2+c_3)}_{\displaystyle = 20\times 12 = 240}
-  = 3x_1' + 4x_2' + 5x_3' + \underbrace{240}_{\text{constante}}
-\]
+Les variables d'écart $x_4, \ldots, x_{12}$ transforment chaque inégalité en
+égalité. La numérotation suit la convention du cours ($x_{n+i}$, $i=1\ldots m$) :
 
-On pose $Z' = \sum_{j=1}^{3} c_j x_j' = 3S' + 4V' + 5G'$ et on rétablira $Z = Z' + 240$ à la fin.
+\begin{center}\small
+\begin{tabular}{ll|ll}
+$x_4$ : écart légumes   & $x_5$ : écart viande    &
+$x_6$ : écart céréales  & $x_7$ : écart cuisson \\
+$x_8$ : écart MO        & $x_9$ : écart total     &
+$x_{10}$ : écart $x_1'\leq 80$ & $x_{11}$ : écart $x_2'\leq 60$ \\
+$x_{12}$ : écart $x_3'\leq 30$ & & &
+\end{tabular}
+\end{center}
 
-\noindent Toutes les contraintes deviennent alors $\leq$ :
-\[
-\begin{cases}
-0{,}5S' + V' + 0{,}3G' \leq 64 \quad (\text{légumes})\\
-0{,}8S'                 \leq 64 \quad (\text{viande})\\
-0{,}4S' + 0{,}6V' + 0{,}9G' \leq 82 \quad (\text{céréales})\\
-2S' + 1{,}5V' + 3G'     \leq 350 \quad (\text{cuisson})\\
-1{,}5S' + 1{,}2V' + 2G' \leq 506 \quad (\text{MO})\\
-S' + V' + G'             \leq 140 \quad (\text{total})\\
-S' \leq 80,\quad V' \leq 60,\quad G' \leq 30\\
-S', V', G' \geq 0
-\end{cases}
-\]
-
-\subsubsection{Étape 3 — Ajout des variables d'écart}
-
-Pour chaque contrainte de type $\leq$, on ajoute une variable d'écart $s_i \geq 0$ :
-
-\[
-\begin{cases}
-0{,}5S' + V' + 0{,}3G' + s_1 = 64\\
-0{,}8S' + s_2 = 64\\
-0{,}4S' + 0{,}6V' + 0{,}9G' + s_3 = 82\\
-2S' + 1{,}5V' + 3G' + s_4 = 350\\
-1{,}5S' + 1{,}2V' + 2G' + s_5 = 506\\
-S' + V' + G' + s_6 = 140\\
-S' + s_7 = 80\\
-V' + s_8 = 60\\
-G' + s_9 = 30
-\end{cases}
-\]
-
-La fonction objectif s'écrit : $Z' - 3S' - 4V' - 5G' = 0$.
-
-\noindent Les variables d'écart $s_1,\ldots,s_9$ forment la \textbf{base initiale}
-(toutes les variables de décision sont hors base avec valeur 0).
+Base initiale : $\{x_4, x_5, x_6, x_7, x_8, x_9, x_{10}, x_{11}, x_{12}\}$.
 
 \subsubsection{Étape 4 — Tableaux du simplexe}
 
 \noindent\textit{Conventions :}\quad
-\colorbox{pivotcol}{\strut colonne entrante}\quad
-\colorbox{pivotrow}{\strut ligne sortante}\quad
-\colorbox{pivotelt}{\strut\textbf{élément pivot}}
+\colorbox{pivotcol}{\strut colonne pivot}\quad
+\colorbox{pivotrow}{\strut ligne pivot}\quad
+\colorbox{pivotelt}{\strut\textbf{pivot}}\quad
+Ligne $Z$ en tête — membre de droite à gauche — variable de base à droite.
 
 \begin{landscape}
 \thispagestyle{fancy}
@@ -1331,34 +1236,34 @@ La fonction objectif s'écrit : $Z' - 3S' - 4V' - 5G' = 0$.
 
 \begin{center}
 \textbf{Tableau T\textsubscript{0} — Initial}\\[2pt]
-\textit{Variable entrante : $G'$ (coefficient $-5$, le plus négatif).
-Variable sortante : $s_9$ (ratio minimum $= 30/1 = 30$). Pivot $= 1$.}
+\textit{Var. entrante : $x_3'$ (coeff. $-5$, plus négatif de $L_0$).
+Var. sortante : $x_{12}$ (ratio min $= 30/1 = 30$). Pivot $= 1$.}
 
 \vspace{0.3cm}
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|>{\columncolor{pivotcol}}c|c|}
+\begin{tabular}{|c|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $b$ &
-$S'$ & $V'$ & $G'$ &
-$s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ &
-\textbf{Ratio}\\
+$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
+$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
+\textbf{V.B.} \\
 \hline
-$s_1$ & 64  & 0,5 & 1   & 0,3 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 213,3\\
-$s_2$ & 64  & 0,8 & 0   & 0   & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & —\\
-$s_3$ & 82  & 0,4 & 0,6 & 0,9 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 91,1\\
-$s_4$ & 350 & 2   & 1,5 & 3   & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 116,7\\
-$s_5$ & 506 & 1,5 & 1,2 & 2   & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 253,0\\
-$s_6$ & 140 & 1   & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 140,0\\
-$s_7$ & 80  & 1   & 0   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & —\\
-$s_8$ & 60  & 0   & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & —\\
+0   & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & \textcolor{critcolor}{$-5$}
+    & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $Z$ \\
+\hline
+64  & 0,5 & 1   & 0,3 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $x_4$     \\
+64  & 0,8 & 0   & 0   & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $x_5$     \\
+82  & 0,4 & 0,6 & 0,9 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & $x_6$     \\
+350 & 2   & 1,5 & 3   & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $x_7$     \\
+506 & 1,5 & 1,2 & 2   & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $x_8$     \\
+140 & 1   & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $x_9$     \\
+80  & 1   & 0   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $x_{10}$  \\
+60  & 0   & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & $x_{11}$  \\
 \rowcolor{pivotrow}
-$s_9$ & \textbf{30} & 0 & 0 & \cellcolor{pivotelt}\textbf{1} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & \textbf{30} $\leftarrow$\\
-\hline
-$Z$ & 0 &
-\textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & \textcolor{critcolor}{$-5$} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \\
+\textbf{30} & 0 & 0 & \cellcolor{pivotelt}\textbf{1}
+  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & $x_{12}$ $\leftarrow$ \\
 \hline
 \end{tabular}
 }
@@ -1367,34 +1272,34 @@ $Z$ & 0 &
 \vspace{0.4cm}
 
 \begin{center}
-\textbf{Tableau T\textsubscript{1} — Après pivot : $G'$ entre, $s_9$ sort}\quad ($Z' = 150$)\\[2pt]
-\textit{Variable entrante : $V'$ (coefficient $-4$). Variable sortante : $s_1$ (ratio min $= 55/1 = 55$). Pivot $= 1$.}
+\textbf{Tableau T\textsubscript{1} — Après pivot : $x_3'$ entre, $x_{12}$ sort}\quad ($Z'=150$)\\[2pt]
+\textit{Var. entrante : $x_2'$ (coeff. $-4$). Var. sortante : $x_4$ (ratio $55/1=55$). Pivot $=1$.}
 
 \vspace{0.3cm}
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $b$ &
-$S'$ & $V'$ & $G'$ &
-$s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ &
-\textbf{Ratio}\\
+$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
+$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
+\textbf{V.B.} \\
+\hline
+150 & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & 0
+  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 5 & $Z$ \\
 \hline
 \rowcolor{pivotrow}
-$s_1$ & \textbf{55}  & 0,5 & \cellcolor{pivotelt}\textbf{1} & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$ & \textbf{55} $\leftarrow$\\
-$s_2$ & 64  & 0,8 & 0   & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0        & —\\
-$s_3$ & 55  & 0,4 & 0,6 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}9$ & 91,7\\
-$s_4$ & 260 & 2   & 1,5 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-3$     & 173,3\\
-$s_5$ & 446 & 1,5 & 1,2 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-2$     & 371,7\\
-$s_6$ & 110 & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-1$     & 110,0\\
-$s_7$ & 80  & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0        & —\\
-$s_8$ & 60  & 0   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0        & 60,0\\
-$G'$  & 30  & 0   & 0   & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1        & —\\
-\hline
-$Z$ & 150 &
-\textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 5 & \\
+\textbf{55}  & 0,5 & \cellcolor{pivotelt}\textbf{1} & 0
+  & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$ & $x_4$ $\leftarrow$ \\
+64  & 0,8 & 0   & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0        & $x_5$    \\
+55  & 0,4 & 0,6 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}9$ & $x_6$    \\
+260 & 2   & 1,5 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-3$     & $x_7$    \\
+446 & 1,5 & 1,2 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-2$     & $x_8$    \\
+110 & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-1$     & $x_9$    \\
+80  & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0        & $x_{10}$ \\
+60  & 0   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0        & $x_{11}$ \\
+30  & 0   & 0   & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1        & $x_3'$   \\
 \hline
 \end{tabular}
 }
@@ -1407,34 +1312,34 @@ $Z$ & 150 &
 \vspace*{0.3cm}
 
 \begin{center}
-\textbf{Tableau T\textsubscript{2} — Après pivot : $V'$ entre, $s_1$ sort}\quad ($Z' = 370$)\\[2pt]
-\textit{Variable entrante : $S'$ (coefficient $-1$). Variable sortante : $s_7$ (ratio min $= 80/1 = 80$). Pivot $= 1$.}
+\textbf{Tableau T\textsubscript{2} — Après pivot : $x_2'$ entre, $x_4$ sort}\quad ($Z'=370$)\\[2pt]
+\textit{Var. entrante : $x_1'$ (coeff. $-1$). Var. sortante : $x_{10}$ (ratio $80/1=80$). Pivot $=1$.}
 
 \vspace{0.3cm}
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $b$ &
-$S'$ & $V'$ & $G'$ &
-$s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ &
-\textbf{Ratio}\\
+$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
+$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
+\textbf{V.B.} \\
 \hline
-$V'$  & 55    & 0,5  & 1 & 0 & 1     & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$  & 110,0\\
-$s_2$ & 64    & 0,8  & 0 & 0 & 0     & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0         & 80,0\\
-$s_3$ & 22    & 0,1  & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}72$ & 220,0\\
-$s_4$ & 177,5 & 1,25 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-2{,}55$ & 142,0\\
-$s_5$ & 380   & 0,9  & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-1{,}64$ & 422,2\\
-$s_6$ & 55    & 0,5  & 0 & 0 & $-1$    & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-0{,}7$  & 110,0\\
+370 & \textcolor{critcolor}{$-1$} & 0 & 0
+  & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3,8 & $Z$ \\
+\hline
+55    & 0,5  & 1 & 0 & 1        & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$  & $x_2'$   \\
+64    & 0,8  & 0 & 0 & 0        & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0         & $x_5$    \\
+22    & 0,1  & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}72$ & $x_6$    \\
+177,5 & 1,25 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-2{,}55$ & $x_7$    \\
+380   & 0,9  & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-1{,}64$ & $x_8$    \\
+55    & 0,5  & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-0{,}7$  & $x_9$    \\
 \rowcolor{pivotrow}
-$s_7$ & \textbf{80} & \cellcolor{pivotelt}\textbf{1} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & \textbf{80} $\leftarrow$\\
-$s_8$ & 5     & $-0{,}5$ & 0 & 0 & $-1$ & 0 & 0 & 0 & 0 & 0 & 0 & 1 & $0{,}3$ & (nég.)\\
-$G'$  & 30    & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-1$ & —\\
-\hline
-$Z$ & 370 &
-\textcolor{critcolor}{$-1$} & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3,8 & \\
+\textbf{80} & \cellcolor{pivotelt}\textbf{1} & 0 & 0
+  & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $x_{10}$ $\leftarrow$ \\
+5     & $-0{,}5$ & 0 & 0 & $-1$ & 0 & 0 & 0 & 0 & 0 & 0 & 1 & $0{,}3$ & $x_{11}$ \\
+30    & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-1$ & $x_3'$   \\
 \hline
 \end{tabular}
 }
@@ -1443,8 +1348,8 @@ $Z$ & 370 &
 \vspace{0.4cm}
 
 \begin{center}
-\textbf{Tableau T\textsubscript{3} — Après pivot : $S'$ entre, $s_7$ sort}\quad ($Z' = 450$)\\[2pt]
-\textcolor{acpmcolor}{\textbf{Test d'optimalité : tous les coefficients de la ligne $Z$ sont $\geq 0$ $\Rightarrow$ \emph{Solution optimale atteinte}}}
+\textbf{Tableau T\textsubscript{3} — Après pivot : $x_1'$ entre, $x_{10}$ sort}\quad ($Z'=450$)\\[2pt]
+\textcolor{acpmcolor}{\textbf{Tous les coeff. de la ligne $Z$ sont $\geq 0$ $\Rightarrow$ solution optimale.}}
 
 \vspace{0.3cm}
 \setlength{\tabcolsep}{3pt}
@@ -1453,22 +1358,21 @@ $Z$ & 370 &
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $b$ &
-$S'$ & $V'$ & $G'$ &
-$s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$\\
+$b$ & $x_1'$ & $x_2'$ & $x_3'$ &
+$x_4$ & $x_5$ & $x_6$ & $x_7$ & $x_8$ & $x_9$ & $x_{10}$ & $x_{11}$ & $x_{12}$ &
+\textbf{V.B.} \\
 \hline
-$V'$  & \textbf{15}   & 0 & 1 & 0 & 1       & 0 & 0 & 0 & 0 & 0 & $-0{,}5$  & 0 & $-0{,}3$\\
-$s_2$ & \textbf{0}    & 0 & 0 & 0 & 0       & 1 & 0 & 0 & 0 & 0 & $-0{,}8$  & 0 & 0\\
-$s_3$ & \textbf{14}   & 0 & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & $-0{,}1$ & 0 & $-0{,}72$\\
-$s_4$ & \textbf{77,5} & 0 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & $-1{,}25$& 0 & $-2{,}55$\\
-$s_5$ & \textbf{308}  & 0 & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & $-0{,}9$ & 0 & $-1{,}64$\\
-$s_6$ & \textbf{15}   & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 1 & $-0{,}5$ & 0 & $-0{,}7$\\
-$S'$  & \textbf{80}   & 1 & 0 & 0 & 0       & 0 & 0 & 0 & 0 & 0 & 1         & 0 & 0\\
-$s_8$ & \textbf{45}   & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 0 & 0,5       & 1 & 0,3\\
-$G'$  & \textbf{30}   & 0 & 0 & 1 & 0       & 0 & 0 & 0 & 0 & 0 & 0         & 0 & $-1$\\
+\textbf{450} & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 3,8 & $Z$ \\
 \hline
-$Z$ & \textbf{450} &
-0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 3,8\\
+\textbf{15}   & 0 & 1 & 0 & 1        & 0 & 0 & 0 & 0 & 0 & $-0{,}5$ & 0 & $-0{,}3$  & $x_2'$   \\
+\textbf{0}    & 0 & 0 & 0 & 0        & 1 & 0 & 0 & 0 & 0 & $-0{,}8$ & 0 & 0         & $x_5$    \\
+\textbf{14}   & 0 & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & $-0{,}1$ & 0 & $-0{,}72$ & $x_6$    \\
+\textbf{77,5} & 0 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & $-1{,}25$& 0 & $-2{,}55$ & $x_7$    \\
+\textbf{308}  & 0 & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & $-0{,}9$ & 0 & $-1{,}64$ & $x_8$    \\
+\textbf{15}   & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 1 & $-0{,}5$ & 0 & $-0{,}7$  & $x_9$    \\
+\textbf{80}   & 1 & 0 & 0 & 0        & 0 & 0 & 0 & 0 & 0 & 1        & 0 & 0         & $x_1'$   \\
+\textbf{45}   & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 0 & 0,5      & 1 & 0,3       & $x_{11}$ \\
+\textbf{30}   & 0 & 0 & 1 & 0        & 0 & 0 & 0 & 0 & 0 & 0        & 0 & $-1$      & $x_3'$   \\
 \hline
 \end{tabular}
 }
@@ -1480,12 +1384,12 @@ $Z$ & \textbf{450} &
 
 \noindent\textbf{Lecture du tableau T\textsubscript{3} :}
 \[
-S' = 80,\quad V' = 15,\quad G' = 30,\quad Z' = 450
+x_1' = 80,\quad x_2' = 15,\quad x_3' = 30,\quad Z' = 450
 \]
 
 \noindent\textbf{Retour aux variables originales :}
 \[
-S = S' + 20 = 100,\quad V = V' + 20 = 35,\quad G = G' + 20 = 50
+x_1 = x_1' + 20 = 100,\quad x_2 = x_2' + 20 = 35,\quad x_3 = x_3' + 20 = 50
 \]
 
 \noindent\textbf{Valeur de la fonction objectif :}
@@ -1496,23 +1400,21 @@ Z = Z' + 240 = 450 + 240 = \boxed{690 \;\text{\texteuro}/\text{jour}}
 \begin{resultbox}
 \textbf{Solution optimale :} produire chaque jour
 \begin{itemize}[noitemsep]
-  \item $\boxed{S = 100}$ repas Standard \quad (apport : $3 \times 100 = 300$ \texteuro)
-  \item $\boxed{V = 35}$ repas Végétariens \quad (apport : $4 \times 35 = 140$ \texteuro)
-  \item $\boxed{G = 50}$ repas Sans Gluten \quad (apport : $5 \times 50 = 250$ \texteuro)
+  \item $\boxed{x_1 = S = 100}$ repas Standard \quad (apport : $3 \times 100 = 300$ \texteuro)
+  \item $\boxed{x_2 = V = 35}$ repas Végétariens \quad (apport : $4 \times 35 = 140$ \texteuro)
+  \item $\boxed{x_3 = G = 50}$ repas Sans Gluten \quad (apport : $5 \times 50 = 250$ \texteuro)
 \end{itemize}
 \textbf{Marge totale maximale : 690 \texteuro/jour}, sur 185 repas produits (sur 200 max).
 
 \medskip
-\noindent\textbf{Contraintes saturées} (variables d'écart nulles) :
+\noindent\textbf{Contraintes saturées} ($x_{n+i} = 0$, variable d'écart nulle) :
 \begin{itemize}[noitemsep]
-  \item $s_1 = 0$ : la contrainte des \textbf{légumes} (100 kg) est saturée ;
-  \item $s_2 = 0$ : la contrainte de la \textbf{viande} (80 kg) est saturée ;
-  \item $s_7 = 0$ : la borne $S \leq 100$ est saturée ;
-  \item $s_9 = 0$ : la borne $G \leq 50$ est saturée.
+  \item $x_4 = 0$ : contrainte des \textbf{légumes} (64 kg après substitution) saturée ;
+  \item $x_5 = 0$ : contrainte de la \textbf{viande} (64 kg après substitution) saturée ;
+  \item $x_{10} = 0$ : borne $x_1' \leq 80$ ($x_1 = 100$) saturée ;
+  \item $x_{12} = 0$ : borne $x_3' \leq 30$ ($x_3 = 50$) saturée.
 \end{itemize}
-Les ressources restantes (céréales, cuisson, MO, capacité totale) ne sont pas
-limitantes : augmenter la disponibilité des légumes ou de la viande permettrait
-d'accroître la marge \cite{cours4GI_PL}.
+Les ressources céréales, cuisson, MO et capacité totale ne sont pas limitantes.
 \end{resultbox}
 
 \newpage
