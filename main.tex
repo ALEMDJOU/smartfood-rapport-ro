@@ -774,81 +774,140 @@ que vers $E$ (arc retour) et ne dessert directement aucun client.
 
 \subsubsection{Tableau des itérations de Dijkstra}
 
-On exécute l'algorithme depuis le nœud source $E$. À chaque itération, le nœud de
-distance minimale est \textbf{sélectionné} (distance \sel{encadrée}), son parent
-$\pi$ est consigné, et la colonne devient \colorbox{finalized}{grisée} pour les
-itérations suivantes. \textbf{La colonne $\pi(v)$ n'est remplie qu'à l'itération où
-$v$ est sélectionné.}
+On applique l'algorithme de Dijkstra (version améliorée du cours) depuis la source
+$x_0 = E$. La liste $L$ contient les sommets à explorer. À chaque itération on
+choisit $x \in L$ tel que $d(x)$ est minimal, on marque $x$ (\colorbox{finalized}{grisé}),
+puis on met à jour les distances estimées des successeurs $G(x)$ non encore marqués.
+La distance \sel{encadrée} indique le sommet sélectionné à cette itération.
+
+\medskip
+\noindent\textbf{Initialisation :}
+$d(E)=0,\; P(E)=\text{nul}$;\quad
+$d(s)=+\infty,\; P(s)=\text{nul}$ pour tout $s \neq E$;\quad
+$L = \{E\}$.
 
 \begin{landscape}
 \thispagestyle{fancy}
 \vspace*{0.3cm}
 
+% ── Tableau principal des distances estimées ───────────────────────────
 \begin{center}
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.25}
+\small\textbf{Tableau d'itérations — distances estimées $d(s)$ et pères $P(s)$}
+\vspace{4pt}
+
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c||cc|cc|cc|cc|cc|cc|cc|cc|cc|cc|cc|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\multirow{2}{*}{\textbf{Iter}} &
-\multirow{2}{*}{\textbf{Sél.}} &
-\multicolumn{2}{c|}{\textbf{E}} &
-\multicolumn{2}{c|}{\textbf{$C_1$}} &
-\multicolumn{2}{c|}{\textbf{$C_2$}} &
-\multicolumn{2}{c|}{\textbf{$C_3$}} &
-\multicolumn{2}{c|}{\textbf{$C_4$}} &
-\multicolumn{2}{c|}{\textbf{A}} &
-\multicolumn{2}{c|}{\textbf{B}} &
-\multicolumn{2}{c|}{\textbf{C}} &
-\multicolumn{2}{c|}{\textbf{D}} &
-\multicolumn{2}{c|}{\textbf{F}} &
-\multicolumn{2}{c|}{\textbf{Labo}}\\
-\cline{3-24}
-& & $d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ &
-$d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ & $d$ & $\pi$ \\
+\textbf{Sél.} $x$ &
+\textbf{$d(E)$} &
+\textbf{$d(C_1)$} &
+\textbf{$d(C_2)$} &
+\textbf{$d(C_3)$} &
+\textbf{$d(C_4)$} &
+\textbf{$d(A)$} &
+\textbf{$d(B)$} &
+\textbf{$d(C)$} &
+\textbf{$d(D)$} &
+\textbf{$d(F)$} &
+\textbf{$d(\mathrm{Labo})$} \\
 \hline
-1 & \textbf{E} &
-\sel{0} & — & 5 & & 7 & & $\infty$ & & $\infty$ & & $\infty$ & & $\infty$ & & $\infty$ & & $\infty$ & & $\infty$ & & $\infty$ & \\
+Init. &
+\sel{0} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ \\
 \hline
-2 & \textbf{$C_1$} &
-\fin{0} & \fin{—} & \sel{5} & E & 7 & & $\infty$ & & $\infty$ & & 8 & & 9 & & $\infty$ & & $\infty$ & & $\infty$ & & $\infty$ & \\
+$E$ &
+\fin{0} & \textbf{5} & \textbf{7} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ \\
 \hline
-3 & \textbf{$C_2$} &
-\fin{0} & \fin{—} & \fin{5} & \fin{E} & \sel{7} & E & $\infty$ & & $\infty$ & & 8 & & 9 & & 9 & & 12 & & $\infty$ & & $\infty$ & \\
+$C_1$ &
+\fin{0} & \fin{5} & 7 & $+\infty$ & $+\infty$ & \textbf{8} & \textbf{9} & $+\infty$ & $+\infty$ & $+\infty$ & $+\infty$ \\
 \hline
-4 & \textbf{A} &
-\fin{0} & \fin{—} & \fin{5} & \fin{E} & \fin{7} & \fin{E} & $\infty$ & & $\infty$ & & \sel{8} & $C_1$ & 9 & & 9 & & 12 & & $\infty$ & & 10 & \\
+$C_2$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & 8 & 9 & \textbf{9} & \textbf{12} & $+\infty$ & $+\infty$ \\
 \hline
-5 & \textbf{B} &
-\fin{0} & \fin{—} & \fin{5} & \fin{E} & \fin{7} & \fin{E} & $\infty$ & & $\infty$ & & \fin{8} & \fin{$C_1$} & \sel{9} & $C_1$ & 9 & & 12 & & $\infty$ & & 10 & \\
+$A$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & 9 & 9 & 12 & $+\infty$ & \textbf{10} \\
 \hline
-6 & \textbf{C} &
-\fin{0} & \fin{—} & \fin{5} & \fin{E} & \fin{7} & \fin{E} & $\infty$ & & $\infty$ & & \fin{8} & \fin{$C_1$} & \fin{9} & \fin{$C_1$} & \sel{9} & $C_2$ & 12 & & $\infty$ & & 10 & \\
+$B$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & 9 & 12 & $+\infty$ & 10 \\
 \hline
-7 & \textbf{Labo} &
-\fin{0} & \fin{—} & \fin{5} & \fin{E} & \fin{7} & \fin{E} & $\infty$ & & $\infty$ & & \fin{8} & \fin{$C_1$} & \fin{9} & \fin{$C_1$} & \fin{9} & \fin{$C_2$} & 12 & & $\infty$ & & \sel{10} & A \\
+$C$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & 12 & $+\infty$ & 10 \\
 \hline
-8 & \textbf{D} &
-\fin{0} & \fin{—} & \fin{5} & \fin{E} & \fin{7} & \fin{E} & $\infty$ & & $\infty$ & & \fin{8} & \fin{$C_1$} & \fin{9} & \fin{$C_1$} & \fin{9} & \fin{$C_2$} & \sel{12} & $C_2$ & $\infty$ & & \fin{10} & \fin{A} \\
+$\mathrm{Labo}$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & 12 & $+\infty$ & \fin{10} \\
 \hline
-\multicolumn{2}{|c|}{\textit{Reste}} &
-\multicolumn{22}{c|}{$C_3$, $C_4$, $F$ jamais atteints depuis $E$ ($d = +\infty$, $\pi = \emptyset$)}\\
+$D$ &
+\fin{0} & \fin{5} & \fin{7} & $+\infty$ & $+\infty$ & \fin{8} & \fin{9} & \fin{9} & \fin{12} & $+\infty$ & \fin{10} \\
+\hline
+\multicolumn{12}{|l|}{\textit{$C_3$, $C_4$, $F$ : jamais atteints depuis $E$ — $d = +\infty$, $P = \text{nul}$}}\\
 \hline
 \end{tabular}
 }
 \end{center}
 
-\vspace{0.3cm}
-\noindent\small\textit{Détail des relaxations :}
-\begin{itemize}
-\item \textbf{Iter 2} (relâche $C_1$) : $d(A) = 5+3 = 8$ ; $d(B) = 5+4 = 9$.
-\item \textbf{Iter 3} (relâche $C_2$) : $d(C) = 7+2 = 9$ ; $d(D) = 7+5 = 12$.
-\item \textbf{Iter 4} (relâche $A$) : $d(\text{Labo}) = 8+2 = 10$.
-\item \textbf{Iter 5} (relâche $B$) : tentative $d(\text{Labo}) = 9+3 = 12 > 10$ — \textbf{pas de mise à jour}.
-\item \textbf{Iter 6} (relâche $C$) : tentative $d(\text{Labo}) = 9+4 = 13 > 10$ — \textbf{pas de mise à jour}.
-\item \textbf{Iter 8} (relâche $D$) : tentative $d(\text{Labo}) = 12+1 = 13 > 10$ — \textbf{pas de mise à jour}.
+\vspace{0.5cm}
+
+% ── Tableau des pères (reconstitution des chemins) ─────────────────────
+\begin{center}
+\small\textbf{Tableau des pères $P(s)$ — solution finale}
+\vspace{4pt}
+
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+$s$ & $E$ & $C_1$ & $C_2$ & $C_3$ & $C_4$ & $A$ & $B$ & $C$ & $D$ & $F$ & Labo\\
+\hline
+$P(s)$ & nul & $E$ & $E$ & — & — & $C_1$ & $C_1$ & $C_2$ & $C_2$ & — & $A$\\
+\hline
+$d(s)$ & 0 & 5 & 7 & $+\infty$ & $+\infty$ & 8 & 9 & 9 & 12 & $+\infty$ & \textbf{10}\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+
+% ── Détail des relaxations ─────────────────────────────────────────────
+\noindent\small\textit{Détail des mises à jour (relaxations) :}
+\begin{itemize}[noitemsep]
+\item \textbf{Sél. $E$} : $G(E)=\{C_1, C_2\}$.
+  $d(C_1)\leftarrow 0+5=5,\;P(C_1)\leftarrow E$;\;
+  $d(C_2)\leftarrow 0+7=7,\;P(C_2)\leftarrow E$.\; $L\leftarrow\{C_1,C_2\}$.
+\item \textbf{Sél. $C_1$} (min de $L$) : $G(C_1)=\{A,B\}$.
+  $d(A)\leftarrow 5+3=8,\;P(A)\leftarrow C_1$;\;
+  $d(B)\leftarrow 5+4=9,\;P(B)\leftarrow C_1$.
+\item \textbf{Sél. $C_2$} : $G(C_2)=\{C,D\}$.
+  $d(C)\leftarrow 7+2=9,\;P(C)\leftarrow C_2$;\;
+  $d(D)\leftarrow 7+5=12,\;P(D)\leftarrow C_2$.
+\item \textbf{Sél. $A$} : $G(A)=\{\text{Labo}\}$.
+  $d(\text{Labo})\leftarrow 8+2=10,\;P(\text{Labo})\leftarrow A$.
+\item \textbf{Sél. $B$} : tentative $d(\text{Labo})=9+3=12>10$ — \textbf{pas de mise à jour}.
+\item \textbf{Sél. $C$} : tentative $d(\text{Labo})=9+4=13>10$ — \textbf{pas de mise à jour}.
+\item \textbf{Sél. Labo} : $G(\text{Labo})=\emptyset$ — aucune relaxation.
+\item \textbf{Sél. $D$} : tentative $d(\text{Labo})=12+1=13>10$ — \textbf{pas de mise à jour}.
 \end{itemize}
+
+\vspace{0.3cm}
+\noindent\textbf{Reconstruction des chemins} (remontée du tableau des pères depuis $s$) :
+
+\begin{center}\small
+\begin{tabular}{c|l|c}
+\toprule
+\textbf{Client} & \textbf{Chemin reconstruit} & \textbf{Distance}\\
+\midrule
+$A$ & Labo $\xleftarrow{P}$ $A$ $\xleftarrow{P}$ $C_1$ $\xleftarrow{P}$ $E$
+    $\;\Rightarrow\;$ $E\to C_1\to A\to\text{Labo}$ & \textbf{10 km}\\
+$B$ & Labo $\xleftarrow{P}$ $A\;(\text{non})$; recalcul depuis $B$ :
+    $E\to C_1\to B\to\text{Labo}$ & \textbf{12 km}\\
+$C$ & $E\to C_2\to C\to\text{Labo}$ & \textbf{13 km}\\
+$D$ & $E\to C_2\to D\to\text{Labo}$ & \textbf{13 km}\\
+$F$ & inaccessible ($d(F)=+\infty$) & —\\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \end{landscape}
 
@@ -1280,24 +1339,26 @@ Variable sortante : $s_9$ (ratio minimum $= 30/1 = 30$). Pivot $= 1$.}
 \renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|>{\columncolor{pivotcol}}c|c|}
 \hline
-\textbf{Base} & $S'$ & $V'$ & $G'$ &
+\textbf{Base} & $b$ &
+$S'$ & $V'$ & $G'$ &
 $s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ &
-$b$ & \textbf{Ratio}\\
+\textbf{Ratio}\\
 \hline
-$s_1$ & 0,5 & 1   & 0,3 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 64  & 213,3\\
-$s_2$ & 0,8 & 0   & 0   & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 64  & —\\
-$s_3$ & 0,4 & 0,6 & 0,9 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 82  & 91,1\\
-$s_4$ & 2   & 1,5 & 3   & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 350 & 116,7\\
-$s_5$ & 1,5 & 1,2 & 2   & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 506 & 253,0\\
-$s_6$ & 1   & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 140 & 140,0\\
-$s_7$ & 1   & 0   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 80  & —\\
-$s_8$ & 0   & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 60  & —\\
+$s_1$ & 64  & 0,5 & 1   & 0,3 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 213,3\\
+$s_2$ & 64  & 0,8 & 0   & 0   & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & —\\
+$s_3$ & 82  & 0,4 & 0,6 & 0,9 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 91,1\\
+$s_4$ & 350 & 2   & 1,5 & 3   & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 116,7\\
+$s_5$ & 506 & 1,5 & 1,2 & 2   & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 253,0\\
+$s_6$ & 140 & 1   & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 140,0\\
+$s_7$ & 80  & 1   & 0   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & —\\
+$s_8$ & 60  & 0   & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & —\\
 \rowcolor{pivotrow}
-$s_9$ & 0   & 0   & \cellcolor{pivotelt}\textbf{1} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & \textbf{30} & \textbf{30} $\leftarrow$\\
+$s_9$ & \textbf{30} & 0 & 0 & \cellcolor{pivotelt}\textbf{1} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & \textbf{30} $\leftarrow$\\
 \hline
-$Z$   & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & \textcolor{critcolor}{$-5$} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \\
+$Z$ & 0 &
+\textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & \textcolor{critcolor}{$-5$} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \\
 \hline
 \end{tabular}
 }
@@ -1314,24 +1375,26 @@ $Z$   & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & \textcolor{c
 \renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $S'$ & $V'$ & $G'$ &
+\textbf{Base} & $b$ &
+$S'$ & $V'$ & $G'$ &
 $s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ &
-$b$ & \textbf{Ratio}\\
+\textbf{Ratio}\\
 \hline
 \rowcolor{pivotrow}
-$s_1$ & 0,5 & \cellcolor{pivotelt}\textbf{1}   & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$ & \textbf{55}  & \textbf{55} $\leftarrow$\\
-$s_2$ & 0,8 & 0   & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0        & 64  & —\\
-$s_3$ & 0,4 & 0,6 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}9$ & 55  & 91,7\\
-$s_4$ & 2   & 1,5 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-3$     & 260 & 173,3\\
-$s_5$ & 1,5 & 1,2 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-2$     & 446 & 371,7\\
-$s_6$ & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-1$     & 110 & 110,0\\
-$s_7$ & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0        & 80  & —\\
-$s_8$ & 0   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0        & 60  & 60,0\\
-$G'$  & 0   & 0   & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1        & 30  & —\\
+$s_1$ & \textbf{55}  & 0,5 & \cellcolor{pivotelt}\textbf{1} & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$ & \textbf{55} $\leftarrow$\\
+$s_2$ & 64  & 0,8 & 0   & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0        & —\\
+$s_3$ & 55  & 0,4 & 0,6 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}9$ & 91,7\\
+$s_4$ & 260 & 2   & 1,5 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-3$     & 173,3\\
+$s_5$ & 446 & 1,5 & 1,2 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-2$     & 371,7\\
+$s_6$ & 110 & 1   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-1$     & 110,0\\
+$s_7$ & 80  & 1   & 0   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0        & —\\
+$s_8$ & 60  & 0   & 1   & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0        & 60,0\\
+$G'$  & 30  & 0   & 0   & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1        & —\\
 \hline
-$Z$   & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 5 & 150 & \\
+$Z$ & 150 &
+\textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 5 & \\
 \hline
 \end{tabular}
 }
@@ -1352,24 +1415,26 @@ $Z$   & \textcolor{critcolor}{$-3$} & \textcolor{critcolor}{$-4$} & 0 & 0 & 0 & 
 \renewcommand{\arraystretch}{1.3}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|>{\columncolor{pivotcol}}c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $S'$ & $V'$ & $G'$ &
+\textbf{Base} & $b$ &
+$S'$ & $V'$ & $G'$ &
 $s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ &
-$b$ & \textbf{Ratio}\\
+\textbf{Ratio}\\
 \hline
-$V'$  & 0,5  & 1 & 0 & 1     & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$  & 55    & 110,0\\
-$s_2$ & 0,8  & 0 & 0 & 0     & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0         & 64    & 80,0\\
-$s_3$ & 0,1  & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}72$ & 22  & 220,0\\
-$s_4$ & 1,25 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-2{,}55$ & 177,5 & 142,0\\
-$s_5$ & 0,9  & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-1{,}64$ & 380 & 422,2\\
-$s_6$ & 0,5  & 0 & 0 & $-1$    & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-0{,}7$  & 55  & 110,0\\
+$V'$  & 55    & 0,5  & 1 & 0 & 1     & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-0{,}3$  & 110,0\\
+$s_2$ & 64    & 0,8  & 0 & 0 & 0     & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0         & 80,0\\
+$s_3$ & 22    & 0,1  & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & 0 & 0 & $-0{,}72$ & 220,0\\
+$s_4$ & 177,5 & 1,25 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & 0 & 0 & $-2{,}55$ & 142,0\\
+$s_5$ & 380   & 0,9  & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & 0 & 0 & $-1{,}64$ & 422,2\\
+$s_6$ & 55    & 0,5  & 0 & 0 & $-1$    & 0 & 0 & 0 & 0 & 1 & 0 & 0 & $-0{,}7$  & 110,0\\
 \rowcolor{pivotrow}
-$s_7$ & \cellcolor{pivotelt}\textbf{1} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & \textbf{80} & \textbf{80} $\leftarrow$\\
-$s_8$ & $-0{,}5$ & 0 & 0 & $-1$ & 0 & 0 & 0 & 0 & 0 & 0 & 1 & $0{,}3$ & 5 & (nég.)\\
-$G'$  & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-1$ & 30 & —\\
+$s_7$ & \textbf{80} & \cellcolor{pivotelt}\textbf{1} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & \textbf{80} $\leftarrow$\\
+$s_8$ & 5     & $-0{,}5$ & 0 & 0 & $-1$ & 0 & 0 & 0 & 0 & 0 & 0 & 1 & $0{,}3$ & (nég.)\\
+$G'$  & 30    & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & $-1$ & —\\
 \hline
-$Z$   & \textcolor{critcolor}{$-1$} & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3,8 & 370 & \\
+$Z$ & 370 &
+\textcolor{critcolor}{$-1$} & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3,8 & \\
 \hline
 \end{tabular}
 }
@@ -1388,20 +1453,22 @@ $Z$   & \textcolor{critcolor}{$-1$} & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3,
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Base} & $S'$ & $V'$ & $G'$ &
-$s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ & $b$\\
+\textbf{Base} & $b$ &
+$S'$ & $V'$ & $G'$ &
+$s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$\\
 \hline
-$V'$  & 0 & 1 & 0 & 1       & 0 & 0 & 0 & 0 & 0 & $-0{,}5$  & 0 & $-0{,}3$  & \textbf{15}\\
-$s_2$ & 0 & 0 & 0 & 0       & 1 & 0 & 0 & 0 & 0 & $-0{,}8$  & 0 & 0         & \textbf{0}\\
-$s_3$ & 0 & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & $-0{,}1$ & 0 & $-0{,}72$ & \textbf{14}\\
-$s_4$ & 0 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & $-1{,}25$& 0 & $-2{,}55$ & \textbf{77,5}\\
-$s_5$ & 0 & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & $-0{,}9$ & 0 & $-1{,}64$ & \textbf{308}\\
-$s_6$ & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 1 & $-0{,}5$ & 0 & $-0{,}7$  & \textbf{15}\\
-$S'$  & 1 & 0 & 0 & 0       & 0 & 0 & 0 & 0 & 0 & 1         & 0 & 0         & \textbf{80}\\
-$s_8$ & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 0 & 0,5       & 1 & 0,3       & \textbf{45}\\
-$G'$  & 0 & 0 & 1 & 0       & 0 & 0 & 0 & 0 & 0 & 0         & 0 & $-1$      & \textbf{30}\\
+$V'$  & \textbf{15}   & 0 & 1 & 0 & 1       & 0 & 0 & 0 & 0 & 0 & $-0{,}5$  & 0 & $-0{,}3$\\
+$s_2$ & \textbf{0}    & 0 & 0 & 0 & 0       & 1 & 0 & 0 & 0 & 0 & $-0{,}8$  & 0 & 0\\
+$s_3$ & \textbf{14}   & 0 & 0 & 0 & $-0{,}6$ & 0 & 1 & 0 & 0 & 0 & $-0{,}1$ & 0 & $-0{,}72$\\
+$s_4$ & \textbf{77,5} & 0 & 0 & 0 & $-1{,}5$ & 0 & 0 & 1 & 0 & 0 & $-1{,}25$& 0 & $-2{,}55$\\
+$s_5$ & \textbf{308}  & 0 & 0 & 0 & $-1{,}2$ & 0 & 0 & 0 & 1 & 0 & $-0{,}9$ & 0 & $-1{,}64$\\
+$s_6$ & \textbf{15}   & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 1 & $-0{,}5$ & 0 & $-0{,}7$\\
+$S'$  & \textbf{80}   & 1 & 0 & 0 & 0       & 0 & 0 & 0 & 0 & 0 & 1         & 0 & 0\\
+$s_8$ & \textbf{45}   & 0 & 0 & 0 & $-1$     & 0 & 0 & 0 & 0 & 0 & 0,5       & 1 & 0,3\\
+$G'$  & \textbf{30}   & 0 & 0 & 1 & 0       & 0 & 0 & 0 & 0 & 0 & 0         & 0 & $-1$\\
 \hline
-$Z$   & 0 & 0 & 0 & 4       & 0 & 0 & 0 & 0 & 0 & 1         & 0 & 3,8       & \textbf{450}\\
+$Z$ & \textbf{450} &
+0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 3,8\\
 \hline
 \end{tabular}
 }
