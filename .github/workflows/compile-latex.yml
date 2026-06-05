@@ -15,30 +15,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: main.tex
-          latexmk_use_xelatex: false
-          latexmk_shell_escape: true
-          extra_system_packages: |
-            texlive-lang-french
-            texlive-fonts-extra
-            texlive-science
-          args: -pdf -interaction=nonstopmode -halt-on-error -file-line-error
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            texlive-lang-french \
+            texlive-science \
+            lmodern \
+            cm-super
+
+      - name: Compile LaTeX (pass 1)
+        run: pdflatex -interaction=nonstopmode -halt-on-error main.tex
+
+      - name: Compile LaTeX (pass 2 — TOC & refs)
+        run: pdflatex -interaction=nonstopmode main.tex
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SmartFood-Rapport
+          name: SmartFood-Rapport-PDF
           path: main.pdf
           retention-days: 30
 
-      - name: Check PDF was generated
+      - name: Confirm success
         run: |
-          if [ -f main.pdf ]; then
-            echo "✅ Compilation réussie — main.pdf généré ($(du -sh main.pdf | cut -f1))"
-          else
-            echo "❌ Échec : main.pdf non trouvé"
-            exit 1
-          fi
+          SIZE=$(du -sh main.pdf | cut -f1)
+          echo "Compilation reussie — main.pdf ($SIZE)"
