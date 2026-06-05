@@ -1,0 +1,44 @@
+name: Compile LaTeX Report
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          latexmk_use_xelatex: false
+          latexmk_shell_escape: true
+          extra_system_packages: |
+            texlive-lang-french
+            texlive-fonts-extra
+            texlive-science
+          args: -pdf -interaction=nonstopmode -halt-on-error -file-line-error
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartFood-Rapport
+          path: main.pdf
+          retention-days: 30
+
+      - name: Check PDF was generated
+        run: |
+          if [ -f main.pdf ]; then
+            echo "✅ Compilation réussie — main.pdf généré ($(du -sh main.pdf | cut -f1))"
+          else
+            echo "❌ Échec : main.pdf non trouvé"
+            exit 1
+          fi
